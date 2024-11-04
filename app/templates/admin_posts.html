@@ -17,20 +17,20 @@
                                      src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.6&w=256&h=256&q=80"
                                      alt="">
                                 <h1 class="text-2xl/7 font-bold text-gray-900 sm:truncate sm:text-2xl/9">
-                                    Index Page
+                                    글 관리
                                 </h1>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="mt-6 flex space-x-3 md:ml-4 md:mt-0">
-                    <button type="button"
-                            class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                        Add money
-                    </button>
+                    {#                    <button type="button"#}
+                    {#                            class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">#}
+                    {#                        Add money#}
+                    {#                    </button>#}
                     <button type="button"
                             class="inline-flex items-center rounded-md bg-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600">
-                        Send money
+                        글 추가
                     </button>
                 </div>
             </div>
@@ -39,8 +39,9 @@
 
     <div class="mt-8">
 
-        <h2 class="mx-auto mt-8 max-w-6xl px-4 text-lg/6 font-medium text-gray-900 sm:px-6 lg:px-8">Recent
-            activity</h2>
+        <h2 class="mx-auto mt-8 max-w-6xl px-4 text-lg/6 font-medium text-gray-900 sm:px-6 lg:px-8">
+            글 관리
+        </h2>
 
         <!-- Activity list (smallest breakpoint only) -->
         <div class="shadow sm:hidden">
@@ -89,54 +90,41 @@
         <div class="hidden sm:block">
             <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
                 <div class="mt-2 flex flex-col">
-                    <div class="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead>
+                    <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-300">
+                            <thead class="bg-gray-50">
                             <tr>
-                                <th class="bg-gray-50 px-6 py-3 text-left text-sm font-semibold text-gray-900"
-                                    scope="col">Transaction
+                                <th scope="col"
+                                    class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Name
                                 </th>
-                                <th class="bg-gray-50 px-6 py-3 text-right text-sm font-semibold text-gray-900"
-                                    scope="col">Amount
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                    Title
                                 </th>
-                                <th class="hidden bg-gray-50 px-6 py-3 text-left text-sm font-semibold text-gray-900 md:block"
-                                    scope="col">Status
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                    Email
                                 </th>
-                                <th class="bg-gray-50 px-6 py-3 text-right text-sm font-semibold text-gray-900"
-                                    scope="col">Date
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Role
+                                </th>
+                                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                                    <span class="sr-only">Edit</span>
                                 </th>
                             </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200 bg-white">
-                            <tr class="bg-white">
-                                <td class="w-full max-w-0 whitespace-nowrap px-6 py-4 text-sm text-gray-900">
-                                    <div class="flex">
-                                        <a href="#" class="group inline-flex space-x-2 truncate text-sm">
-                                            <svg class="h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-                                                 viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"
-                                                 data-slot="icon">
-                                                <path fill-rule="evenodd"
-                                                      d="M1 4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4Zm12 4a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM4 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm13-1a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM1.75 14.5a.75.75 0 0 0 0 1.5c4.417 0 8.693.603 12.749 1.73 1.111.309 2.251-.512 2.251-1.696v-.784a.75.75 0 0 0-1.5 0v.784a.272.272 0 0 1-.35.25A49.043 49.043 0 0 0 1.75 14.5Z"
-                                                      clip-rule="evenodd"/>
-                                            </svg>
-                                            <p class="truncate text-gray-500 group-hover:text-gray-900">
-                                                Payment to Molly Sanders</p>
-                                        </a>
-                                    </div>
+                            <tr>
+                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                                    Lindsay Walton
                                 </td>
-                                <td class="whitespace-nowrap px-6 py-4 text-right text-sm text-gray-500">
-                                    <span class="font-medium text-gray-900">$20,000</span>
-                                    USD
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">Front-end Developer</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">lindsay.walton@example.com
                                 </td>
-                                <td class="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-500 md:block">
-                                    <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium capitalize text-green-800">success</span>
-                                </td>
-                                <td class="whitespace-nowrap px-6 py-4 text-right text-sm text-gray-500">
-                                    <time datetime="2020-07-11">July 11, 2020</time>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">Member</td>
+                                <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                                    <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit<span class="sr-only">, Lindsay Walton</span></a>
                                 </td>
                             </tr>
 
-                            <!-- More transactions... -->
+                            <!-- More people... -->
                             </tbody>
                         </table>
                         <!-- Pagination -->

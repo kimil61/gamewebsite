@@ -1,4 +1,7 @@
 # app/routes.py
+from crypt import methods
+from datetime import datetime
+
 from flask import Blueprint, jsonify, redirect, render_template, request, session, url_for
 from .models import db, User, Post, Comment, Category, Tag, PostTag
 from .utils import check_password_hash, generate_password_hash
@@ -53,7 +56,196 @@ def admin_settings():
 @bp.route('/admin/users')
 @login_required
 def admin_users():
-    return render_template('admin_users.html')
+    users = User.query.all()
+    return render_template('admin_users.html', users=users)
+
+
+@bp.route('/admin/users/create', methods=['POST'])
+@login_required
+def admin_create_user():
+    try:
+        # 폼 데이터 가져오기
+        username = request.form.get('username')
+        password = request.form.get('password')
+        repassword = request.form.get('repassword')
+        email = request.form.get('email')
+        is_admin = request.form.get('is_admin', 'off')
+
+        # 필수 입력값 검증
+        if not all([username, password, repassword, email]):
+            return jsonify({
+                'success': False,
+                'message': '모든 필수 항목을 입력해주세요.'
+            }), 400
+
+        # 비밀번호 일치 여부 확인
+        if password != repassword:
+            return jsonify({
+                'success': False,
+                'message': '비밀번호가 일치하지 않습니다.'
+            }), 400
+
+        # 사용자 이름 중복 체크
+        if User.query.filter_by(username=username).first():
+            return jsonify({
+                'success': False,
+                'message': '이미 존재하는 사용자 이름입니다.'
+            }), 400
+
+        # 이메일 중복 체크
+        if User.query.filter_by(email=email).first():
+            return jsonify({
+                'success': False,
+                'message': '이미 존재하는 이메일입니다.'
+            }), 400
+
+        # checkbox 값을 boolean으로 변환 (on => 1, off => 0)
+        is_admin_bool = 1 if is_admin == 'on' else 0
+
+        # 새 사용자 생성
+        new_user = User(
+            username=username,
+            password=generate_password_hash(password),  # 비밀번호 해시화
+            email=email,
+            is_admin=is_admin_bool,
+            created_at=datetime.utcnow()
+        )
+
+        # DB에 저장
+        db.session.add(new_user)
+        db.session.commit()
+
+        # 성공 응답 반환
+        return jsonify({
+            'success': True,
+            'message': '사용자가 성공적으로 생성되었습니다.',
+            'user': {
+                'id': new_user.id,
+                'username': new_user.username,
+                'email': new_user.email,
+                'is_admin': new_user.is_admin,
+                'created_at': new_user.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            }
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'message': f'사용자 생성 중 오류가 발생했습니다: {str(e)}'
+        }), 500
+
+
+@bp.route('/admin/users/<int:user_id>', methods=['GET'])
+@login_required
+def get_user(user_id):
+    try:
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({
+                'success': False,
+                'message': '사용자를 찾을 수 없습니다.'
+            }), 404
+
+        return jsonify({
+            'success': True,
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'is_admin': user.is_admin,
+                'created_at': user.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            }
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'사용자 정보를 불러오는 중 오류가 발생했습니다: {str(e)}'
+        }), 500
+
+
+@bp.route('/admin/users/<int:user_id>/update', methods=['POST'])
+@login_required
+def update_user(user_id):
+    try:
+        print(user_id)
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({
+                'success': False,
+                'message': '사용자를 찾을 수 없습니다.'
+            }), 404
+
+        # 기본 정보 업데이트
+        username = request.form.get('username')
+        email = request.form.get('email')
+        is_admin = request.form.get('is_admin', 'off')
+
+        # 사용자 이름 중복 체크 (현재 사용자 제외)
+        existing_user = User.query.filter(
+            User.username == username,
+            User.id != user_id
+        ).first()
+        if existing_user:
+            return jsonify({
+                'success': False,
+                'message': '이미 존재하는 사용자 이름입니다.'
+            }), 400
+
+        # 이메일 중복 체크 (현재 사용자 제외)
+        existing_email = User.query.filter(
+            User.email == email,
+            User.id != user_id
+        ).first()
+        if existing_email:
+            return jsonify({
+                'success': False,
+                'message': '이미 존재하는 이메일입니다.'
+            }), 400
+
+        # 정보 업데이트
+        user.username = username
+        user.email = email
+        user.is_admin = is_admin == 'on'
+
+        # 비밀번호 변경이 요청된 경우
+        new_password = request.form.get('new_password')
+        if new_password:
+            confirm_new_password = request.form.get('confirm_new_password')
+            if new_password != confirm_new_password:
+                return jsonify({
+                    'success': False,
+                    'message': '새 비밀번호가 일치하지 않습니다.'
+                }), 400
+            user.password = generate_password_hash(new_password)
+
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'message': '사용자 정보가 성공적으로 업데이트되었습니다.',
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'is_admin': user.is_admin,
+                'created_at': user.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            }
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'message': f'사용자 정보 업데이트 중 오류가 발생했습니다: {str(e)}'
+        }), 500
+
+
+@bp.route('/admin/posts')
+@login_required
+def admin_posts():
+    return render_template('admin_posts.html')
 
 
 @bp.route('/admin/logout')

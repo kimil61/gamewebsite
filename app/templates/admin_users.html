@@ -1,35 +1,180 @@
 {% extends "_admin_base.html" %}
 {% block title %}
-    Admin Users
+    Index
 {% endblock %}
 {% block content %}
-    <div class="px-4 sm:px-6 lg:px-8">
-        <div class="sm:flex sm:items-center">
-            <div class="sm:flex-auto">
-                <h1 class="text-base font-semibold text-gray-900">Users</h1>
-                <p class="mt-2 text-sm text-gray-700">A list of all the users in your account including their name,
-                    title,
-                    email and role.</p>
-            </div>
-            <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-                <button type="button"
-                        class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                    Add user
-                </button>
+    <!-- Page header -->
+    <div class="bg-white shadow">
+        <div class="px-4 sm:px-6 lg:mx-auto lg:max-w-6xl lg:px-8">
+            <div class="py-6 md:flex md:items-center md:justify-between lg:border-t lg:border-gray-200">
+                <div class="min-w-0 flex-1">
+                    <!-- Profile -->
+                    <div class="flex items-center">
+
+                        <div>
+                            <div class="flex items-center">
+                                <img class="h-16 w-16 rounded-full sm:hidden"
+                                     src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.6&w=256&h=256&q=80"
+                                     alt="">
+                                <h1 class="text-2xl/7 font-bold text-gray-900 sm:truncate sm:text-2xl/9">
+                                    사용자 관리
+                                </h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 flex space-x-3 md:ml-4 md:mt-0">
+                    {#                    <button type="button"#}
+                    {#                            class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">#}
+                    {#                        Add money#}
+                    {#                    </button>#}
+                    <button type="button" onclick="openAddModal()"
+                            class="inline-flex items-center rounded-md bg-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600">
+                        사용자 추가
+                    </button>
+
+
+                </div>
             </div>
         </div>
-        <div class="mt-8 flow-root">
-            <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+    </div>
+
+
+    <!-- Modal Background -->
+    <div id="modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
+         onclick="closeAddModal();closeEditModal()"></div>
+
+    <!-- Add User Modal -->
+    <div id="modalAddContent"
+         class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-lg p-8">
+        <div class="flex justify-between items-center mb-4">
+            <h4 class="text-lg">Add User</h4>
+            <button onclick="closeAddModal()" class="text-gray-500 hover:text-gray-700">
+                <span class="text-2xl">&times;</span>
+            </button>
+        </div>
+        <form id="addUserForm" onsubmit="handleSubmit(event)">
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
+                    Username
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                       name="username" id="username" type="text" placeholder="Enter Username" required>
+
+                <label class="block text-gray-700 text-sm font-bold mb-2 mt-4" for="password">
+                    Password
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                       name="password" id="password" type="password" placeholder="Enter Password" required>
+
+                <label class="block text-gray-700 text-sm font-bold mb-2 mt-4" for="repassword">
+                    Confirm Password
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                       name="repassword" id="repassword" type="password" placeholder="Confirm Password" required>
+
+                <label class="block text-gray-700 text-sm font-bold mb-2 mt-4" for="email">
+                    Email
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                       name="email" id="email" type="email" placeholder="Enter email" required>
+
+                <div class="flex items-center mt-4">
+                    <input class="mr-2"
+                           name="is_admin" id="is_admin" type="checkbox">
+                    <label class="text-gray-700 text-sm font-bold" for="is_admin">
+                        Is Admin
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <button type="submit"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Save
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Alert Component -->
+    <div id="alert" class="hidden fixed top-4 right-4 p-4 rounded-lg text-white">
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="modalEditContent"
+         class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-lg p-8">
+        <div class="flex justify-between items-center mb-4">
+            <h4 class="text-lg">Edit User</h4>
+            <button onclick="closeEditModal()" class="text-gray-500 hover:text-gray-700">
+                <span class="text-2xl">&times;</span>
+            </button>
+        </div>
+        <form id="editUserForm" onsubmit="handleEditSubmit(event)">
+            <input type="hidden" id="edit_user_id" name="user_id">
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="edit_username">
+                    Username
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                       name="username" id="edit_username" type="text" placeholder="Enter Username" required>
+
+                <label class="block text-gray-700 text-sm font-bold mb-2 mt-4" for="edit_email">
+                    Email
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                       name="email" id="edit_email" type="email" placeholder="Enter email" required>
+
+                <div class="mt-4 mb-2">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Change Password (optional)</label>
+                    <div class="space-y-2">
+                        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                               name="new_password" id="edit_new_password" type="password"
+                               placeholder="New Password">
+
+                        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                               name="confirm_new_password" id="edit_confirm_new_password"
+                               type="password" placeholder="Confirm New Password">
+                    </div>
+                </div>
+
+                <div class="flex items-center mt-4">
+                    <input class="mr-2"
+                           name="is_admin" id="edit_is_admin" type="checkbox">
+                    <label class="text-gray-700 text-sm font-bold" for="edit_is_admin">
+                        Is Admin
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <button type="submit"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Update
+                </button>
+            </div>
+        </form>
+    </div>
+
+
+    <div class="mt-8">
+
+        <h2 class="mx-auto mt-8 max-w-6xl px-4 text-lg/6 font-medium text-gray-900 sm:px-6 lg:px-8">
+            사용자 관리
+        </h2>
+        <!-- Activity table (small breakpoint and up) -->
+        <div class="hidden sm:block">
+            <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+                <div class="mt-2 flex flex-col">
                     <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
                         <table class="min-w-full divide-y divide-gray-300">
                             <thead class="bg-gray-50">
                             <tr>
                                 <th scope="col"
-                                    class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Name
+                                    class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">No.
                                 </th>
                                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                    Title
+                                    UserName
                                 </th>
                                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                                     Email
@@ -42,25 +187,210 @@
                             </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200 bg-white">
-                            <tr>
-                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                                    Lindsay Walton
-                                </td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">Front-end Developer</td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">lindsay.walton@example.com
-                                </td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">Member</td>
-                                <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                    <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit<span class="sr-only">, Lindsay Walton</span></a>
-                                </td>
-                            </tr>
+                            {% for user in users %}
+                                <tr>
+                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                                        {{ user.id }}
+                                    </td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                        {{ user.username }}
+                                    </td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                        {{ user.email }}
+                                    </td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                        {{ 'Admin' if user.is_admin else 'User' }}
+                                    </td>
+                                    <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                                        <a href="#"
+                                           onclick="openEditModal({
+                                                   id: '{{ user.id }}',
+                                                   username: '{{ user.username }}',
+                                                   email: '{{ user.email }}',
+                                                   is_admin: {{ 'true' if user.is_admin else 'false' }}
+                                                   })"
+                                           class="text-indigo-600 hover:text-indigo-900 cursor-pointer">
+                                            Edit<span class="sr-only">, {{ user.username }}</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
 
                             <!-- More people... -->
                             </tbody>
                         </table>
+                        <!-- Pagination -->
+                        <nav class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6"
+                             aria-label="Pagination">
+                            <div class="hidden sm:block">
+                                <p class="text-sm text-gray-700">
+                                    Showing
+                                    <span class="font-medium">1</span>
+                                    to
+                                    <span class="font-medium">10</span>
+                                    of
+                                    <span class="font-medium">20</span>
+                                    results
+                                </p>
+                            </div>
+                            <div class="flex flex-1 justify-between gap-x-3 sm:justify-end">
+                                <a href="#"
+                                   class="relative inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:ring-gray-400">Previous</a>
+                                <a href="#"
+                                   class="relative inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:ring-gray-400">Next</a>
+                            </div>
+                        </nav>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        function openAddModal() {
+            document.getElementById('modal').classList.remove('hidden');
+            document.getElementById('modalAddContent').classList.remove('hidden');
+        }
+
+        function closeAddModal() {
+            const modal = document.getElementById('modalAddContent');
+            modal.classList.add('hidden');
+            document.getElementById('addUserForm').reset();
+        }
+
+
+        // add user ajax
+        function showAlert(message, type = 'success') {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.className = `fixed top-4 right-4 p-4 rounded-lg text-white ${
+                type === 'success' ? 'bg-green-500' : 'bg-red-500'
+            }`;
+
+            // 3초 후 알림 숨기기
+            setTimeout(() => {
+                alert.className = 'hidden';
+            }, 3000);
+        }
+
+        async function handleSubmit(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+
+            try {
+                const response = await fetch('/admin/users/create', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert(result.message, 'success');
+                    closeAddModal();
+
+                    // 테이블 새로고침 (테이블 ID가 userTable이라고 가정)
+                    if (typeof refreshUserTable === 'function') {
+                        refreshUserTable();
+                    } else {
+                        // 테이블 새로고침 함수가 없다면 페이지 새로고침
+                        window.location.reload();
+                    }
+                } else {
+                    showAlert(result.message, 'error');
+                }
+            } catch (error) {
+                showAlert('An error occurred while saving the user.', 'error');
+            }
+        }
+
+        // 모달 열기 함수
+        function openEditModal(user) {
+            const modal = document.getElementById('modalEditContent');
+
+            // 폼 필드에 현재 사용자 정보 채우기
+            document.getElementById('edit_user_id').value = user.id;
+            document.getElementById('edit_username').value = user.username;
+            document.getElementById('edit_email').value = user.email;
+            document.getElementById('edit_is_admin').checked = user.is_admin;
+
+            // 비밀번호 필드 초기화
+            document.getElementById('edit_new_password').value = '';
+            document.getElementById('edit_confirm_new_password').value = '';
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            const modal = document.getElementById('modalEditContent');
+            modal.classList.add('hidden');
+            document.getElementById('editUserForm').reset();
+        }
+
+        async function handleEditSubmit(event) {
+            event.preventDefault();
+
+            // 새 비밀번호 일치 여부 확인
+            const newPassword = document.getElementById('edit_new_password').value;
+            const confirmNewPassword = document.getElementById('edit_confirm_new_password').value;
+
+            if (newPassword || confirmNewPassword) {
+                if (newPassword !== confirmNewPassword) {
+                    showAlert('새 비밀번호가 일치하지 않습니다.', 'error');
+                    return;
+                }
+            }
+
+            const formData = new FormData(event.target);
+            const userId = formData.get('user_id');
+
+            try {
+                const response = await fetch(`/admin/users/${userId}/update`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert(result.message, 'success');
+                    closeEditModal();
+
+                    // 테이블 새로고침
+                    if (typeof refreshUserTable === 'function') {
+                        refreshUserTable();
+                    } else {
+                        window.location.reload();
+                    }
+                } else {
+                    showAlert(result.message, 'error');
+                }
+            } catch (error) {
+                showAlert('사용자 정보 수정 중 오류가 발생했습니다.', 'error');
+            }
+        }
+
+        // 테이블의 Edit 버튼에 이벤트 리스너 추가 예시
+        function addEditButtonListeners() {
+            document.querySelectorAll('.edit-user-btn').forEach(button => {
+                button.addEventListener('click', async () => {
+                    const userId = button.dataset.userId;
+                    try {
+                        const response = await fetch(`/admin/users/${userId}`);
+                        const result = await response.json();
+                        if (result.success) {
+                            openEditModal(result.user);
+                        } else {
+                            showAlert(result.message, 'error');
+                        }
+                    } catch (error) {
+                        showAlert('사용자 정보를 불러오는데 실패했습니다.', 'error');
+                    }
+                });
+            });
+        }
+
+        // 페이지 로드 시 Edit 버튼 리스너 추가
+        document.addEventListener('DOMContentLoaded', addEditButtonListeners);
+    </script>
 {% endblock %}
