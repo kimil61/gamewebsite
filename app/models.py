@@ -1,15 +1,18 @@
-# models.py
+# app/models.py
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
 
 db = SQLAlchemy()
 
-class User(db.Model):
+
+class User(UserMixin, db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), nullable=False)
     password = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=db.func.now())
     updated_at = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
 
@@ -18,6 +21,7 @@ class User(db.Model):
             'id': self.id,
             'username': self.username,
             'email': self.email,
+            'is_admin': self.is_admin,
             'created_at': self.created_at,
             'updated_at': self.updated_at
         }
@@ -50,6 +54,7 @@ class Post(db.Model):
             'created_at': self.created_at,
             'updated_at': self.updated_at
         }
+
 
 class Category(db.Model):
     __tablename__ = 'categories'
@@ -91,6 +96,7 @@ class Comment(db.Model):
             'created_at': self.created_at,
             'updated_at': self.updated_at
         }
+
 
 class PostTag(db.Model):
     __tablename__ = 'post_tag'

@@ -2,4 +2,9 @@ Flask
 gunicorn
 SQLAlchemy
 flask-bcrypt
+flask-wtf
+flask-login
+python-dotenv
+pymysql
 flask_sqlalchemy
+flask_cors
